@@ -1,0 +1,9 @@
+[build]
+  base = "taller-frontend-vue"
+  command = "chmod -R +x node_modules/.bin && npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
