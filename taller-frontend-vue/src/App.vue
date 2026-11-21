@@ -364,8 +364,8 @@ const nuevaCategoria = ref({
   descripcion: ''
 });
 
-const API_URL = 'http://localhost:5000/api/Productos';
-const API_CATEGORIAS = 'http://localhost:5000/api/CategoriasServicios';
+const API_URL = 'https://potential-engine-6w9x779vg76359rp-5000.app.github.dev/api/Productos';
+const API_CATEGORIAS = 'https://potential-engine-6w9x779vg76359rp-5000.app.github.dev/api/CategoriasServicios';
 
 const obtenerProductos = async () => {
   try {
