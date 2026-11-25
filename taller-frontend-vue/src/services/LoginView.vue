@@ -6,7 +6,7 @@ import logo from '../imagenes/logo.png';
 const emit = defineEmits(['login-success']);
 
 // Ajusta el puerto si tu TallerApi corre en otro puerto
-const API_AUTH_URL = 'http://localhost:5000/api/Auth/login';
+const API_AUTH_URL = 'https://potential-engine-6w9x779vg76359rp-5050.app.github.dev/api/Auth/login';
 
 const form = reactive({
   nombreUsuario: '',

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Apunta al puerto donde corre tu TallerApi en .NET
-const API_URL = 'http://localhost:5000/api/Productos';
+const API_URL = 'https://potential-engine-6w9x779vg76359rp-5000.app.github.dev/api/Productos';
 
 export default {
   async obtenerProductos() {

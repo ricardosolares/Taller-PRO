@@ -387,8 +387,8 @@ const nuevaCategoria = ref({
   descripcion: ''
 });
 
-const API_URL = 'http://localhost:5000/api/Productos';
-const API_CATEGORIAS = 'http://localhost:5000/api/CategoriasServicios';
+const API_URL = 'https://potential-engine-6w9x779vg76359rp-5050.app.github.dev/api/Productos';
+const API_CATEGORIAS = 'https://potential-engine-6w9x779vg76359rp-5050.app.github.dev/api/CategoriasServicios';
 
 const inicialesUsuario = computed(() => {
   const texto = sesion.value?.nombreCompleto || sesion.value?.nombreUsuario || 'TP';
