@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Properties"
+    "\\Controllers",
+    "\\Entities",
+    "\\Models",
+    "\\Properties",
+    "\\Services"
   ],
+  "SelectedNode": "\\Entities\\Entities.cs",
   "PreviewInSolutionExplorer": false
 }
