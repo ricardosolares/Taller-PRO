@@ -1,5 +1,9 @@
 <template>
-  <v-app>
+  <!-- Si no hay sesión activa, el Login es siempre la pantalla principal -->
+  <LoginView v-if="!sesion" @login-success="onLoginSuccess" />
+
+  <!-- Sistema principal TallerPro -->
+  <v-app v-else>
     <!-- Barra Lateral (Sidebar Profesional) -->
     <v-navigation-drawer
       v-model="drawer"
@@ -104,9 +108,25 @@
         <v-chip color="success" variant="tonal" size="small" prepend-icon="mdi-check-circle">
           API Conectada
         </v-chip>
+
+        <span class="text-body-2 font-weight-medium d-none d-sm-inline">
+          {{ sesion.nombreCompleto || sesion.nombreUsuario }}
+        </span>
+
         <v-avatar color="primary" size="36">
-          <span class="text-white text-caption font-weight-bold">PC</span>
+          <span class="text-white text-caption font-weight-bold">{{ inicialesUsuario }}</span>
         </v-avatar>
+
+        <v-btn
+          variant="text"
+          color="error"
+          size="small"
+          prepend-icon="mdi-logout"
+          class="text-none"
+          @click="cerrarSesion"
+        >
+          Salir
+        </v-btn>
       </div>
     </v-app-bar>
 
@@ -227,7 +247,7 @@
               <h3 class="text-h6 font-weight-bold">Gestión de Clientes</h3>
               <p class="text-body-2 text-medium-emphasis">Administra los datos de los propietarios de vehículos.</p>
             </div>
-            <v-btn color="primary" variant="flat" class="text-none" @click="alert('Módulo en desarrollo')">Agregar Cliente</v-btn>
+            <v-btn color="primary" variant="flat" class="text-none" @click="mostrarAlertaDesarrollo">Agregar Cliente</v-btn>
           </v-card>
           <v-card class="rounded-xl pa-12 text-center text-medium-emphasis" elevation="1" border>
             No hay clientes registrados en este módulo todavía.
@@ -241,7 +261,7 @@
               <h3 class="text-h6 font-weight-bold">Control de Vehículos</h3>
               <p class="text-body-2 text-medium-emphasis">Registro de automóviles ingresados al taller.</p>
             </div>
-            <v-btn color="primary" variant="flat" class="text-none" @click="alert('Módulo en desarrollo')">Ingresar Vehículo</v-btn>
+            <v-btn color="primary" variant="flat" class="text-none" @click="mostrarAlertaDesarrollo">Ingresar Vehículo</v-btn>
           </v-card>
           <v-card class="rounded-xl pa-12 text-center text-medium-emphasis" elevation="1" border>
             No hay vehículos ingresados actualmente.
@@ -282,10 +302,10 @@
               required
             />
             <v-select
-              v-model="nuevoProducto.id_categoria"
+              v-model="nuevoProducto.idCategoria"
               :items="categorias"
               item-title="nombre"
-              item-value="id_categoria"
+              item-value="idCategoria"
               label="Categoría del Servicio / Repuesto"
               variant="outlined"
               density="comfortable"
@@ -339,8 +359,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import axios from 'axios';
+import LoginView from './LoginView.vue';
+import logo from './imagenes/logo.png';
 
 const { mobile: isMobile } = useDisplay();
+const sesion = ref(null);
 const vistaActual = ref('dashboard');
 const drawer = ref(true);
 const rail = ref(false);
@@ -356,7 +379,7 @@ const nuevoProducto = ref({
   nombre: '',
   descripcion: '',
   precio: null,
-  id_categoria: null
+  idCategoria: null
 });
 
 const nuevaCategoria = ref({
@@ -364,8 +387,38 @@ const nuevaCategoria = ref({
   descripcion: ''
 });
 
-const API_URL = 'https://potential-engine-6w9x779vg76359rp-5000.app.github.dev/api/Productos';
-const API_CATEGORIAS = 'https://potential-engine-6w9x779vg76359rp-5000.app.github.dev/api/CategoriasServicios';
+const API_URL = 'http://localhost:5000/api/Productos';
+const API_CATEGORIAS = 'http://localhost:5000/api/CategoriasServicios';
+
+const inicialesUsuario = computed(() => {
+  const texto = sesion.value?.nombreCompleto || sesion.value?.nombreUsuario || 'TP';
+  return texto
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(p => p[0].toUpperCase())
+    .join('');
+});
+
+const mostrarAlertaDesarrollo = () => {
+  window.alert('Módulo en desarrollo');
+};
+
+const cargarDatosTaller = async () => {
+  await Promise.all([obtenerProductos(), obtenerCategorias()]);
+};
+
+const onLoginSuccess = async (nuevaSesion) => {
+  sesion.value = nuevaSesion;
+  vistaActual.value = 'dashboard';
+  await cargarDatosTaller();
+};
+
+const cerrarSesion = () => {
+  localStorage.removeItem('taller_auth');
+  sessionStorage.removeItem('taller_auth');
+  sesion.value = null;
+};
 
 const obtenerProductos = async () => {
   try {
@@ -395,13 +448,20 @@ const productosFiltrados = computed(() => {
 
 const guardarProducto = async () => {
   try {
-    await axios.post(API_URL, nuevoProducto.value);
+    const payload = {
+      nombre: nuevoProducto.value.nombre,
+      descripcion: nuevoProducto.value.descripcion,
+      precio: Number(nuevoProducto.value.precio),
+      idCategoria: Number(nuevoProducto.value.idCategoria)
+    };
+
+    await axios.post(API_URL, payload);
     mostrarModalProducto.value = false;
-    nuevoProducto.value = { nombre: '', descripcion: '', precio: null, id_categoria: null };
+    nuevoProducto.value = { nombre: '', descripcion: '', precio: null, idCategoria: null };
     await obtenerProductos();
   } catch (error) {
-    console.error('Error al guardar el producto:', error);
-    alert('No se pudo guardar el producto. Verifica los campos.');
+    console.error('Error al guardar el producto:', error.response?.data || error);
+    window.alert('No se pudo guardar el producto. Verifica los campos.');
   }
 };
 
@@ -413,13 +473,20 @@ const guardarCategoria = async () => {
     await obtenerCategorias();
   } catch (error) {
     console.error('Error al guardar la categoría:', error);
-    alert('No se pudo guardar la categoría en la base de datos.');
+    window.alert('No se pudo guardar la categoría en la base de datos.');
   }
 };
 
-onMounted(() => {
-  obtenerProductos();
-  obtenerCategorias();
+onMounted(async () => {
+  const raw = localStorage.getItem('taller_auth') || sessionStorage.getItem('taller_auth');
+  if (raw) {
+    try {
+      sesion.value = JSON.parse(raw);
+      await cargarDatosTaller();
+    } catch {
+      sesion.value = null;
+    }
+  }
 });
 </script>
 

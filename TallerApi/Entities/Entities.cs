@@ -147,4 +147,30 @@ namespace TallerApi.Entities
         [Column("subtotal")]
         public decimal Subtotal { get; set; }
     }
-}
+
+    public class UsuarioEntities
+    {
+       
+            [Key]
+            [Column("IdUsuario")]
+            public int IdUsuario { get; set; }
+
+            [Column("NombreCompleto")]
+            public string NombreCompleto { get; set; } = string.Empty;
+
+            [Column("NombreUsuario")]
+            public required string NombreUsuario { get; set; }
+
+            [Column("PasswordHash")]
+            public required string PasswordHash { get; set; }
+
+            [Column("Rol")]
+            public string Rol { get; set; } = "Admin";
+
+            [Column("Activo")]
+            public bool Activo { get; set; } = true;
+
+            [Column("FechaCreacion")]
+            public DateTime FechaCreacion { get; set; } = DateTime.Now;
+        }
+    }

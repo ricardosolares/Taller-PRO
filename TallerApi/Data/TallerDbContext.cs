@@ -18,6 +18,7 @@ namespace TallerApi.Data
         public DbSet<DetalleCotizacionEntity> DetallesCotizaciones { get; set; }
         public DbSet<FacturaEntity> Facturas { get; set; }
         public DbSet<DetalleFacturaEntity> DetallesFacturas { get; set; }
+        public DbSet<UsuarioEntities> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +34,7 @@ namespace TallerApi.Data
             modelBuilder.Entity<DetalleCotizacionEntity>().ToTable("detalleCotizacion");
             modelBuilder.Entity<FacturaEntity>().ToTable("factura");
             modelBuilder.Entity<DetalleFacturaEntity>().ToTable("detalleFactura");
+            modelBuilder.Entity<UsuarioEntities>().ToTable("Usuarios");
         }
     }
 }

@@ -19,6 +19,7 @@ builder.Services.AddDbContext<TallerDbContext>(options =>
 // Registrar Servicios (Inyección de Dependencias)
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<ICategoriaServicioService, CategoriaServicioService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Configurar CORS para Vue.js
 builder.Services.AddCors(options =>
